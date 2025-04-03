@@ -1,0 +1,4 @@
+#intellij
+build/
+.idea/
+mysql_data/

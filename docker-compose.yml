@@ -1,0 +1,50 @@
+services:
+  mariadb:
+    container_name: menstrunation_db
+    image: mariadb:10.11
+    build:
+      dockerfile: ./Dockerfile
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: menstrunation_db
+    ports:
+      - '4304:3306'
+    healthcheck:
+      test: [ "CMD", "mariadb", "-h", "localhost", "-u", "root", "-proot", "-e", "SELECT 1" ]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+    networks:
+      - menstrunation_net
+
+  phpmyadmin:
+    container_name: menstrunation_phpmyadmin
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - '4305:80'
+    environment:
+      - PMA_HOST=mariadb
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - menstrunation_net
+
+  menstrunation_app:
+    container_name: menstrunation_spring_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      phpmyadmin:
+        condition: service_started
+    restart: always
+    networks:
+      - menstrunation_net
+
+networks:
+  menstrunation_net:
+    driver: bridge

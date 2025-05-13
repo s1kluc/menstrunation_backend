@@ -4,7 +4,7 @@ services:
     image: mariadb:10.11
     environment:
       MARIADB_ROOT_PASSWORD: root
-      MARIADB_DATABASE: menstrunation_db
+      MARIADB_DATABASE: menstrunation
     ports:
       - '4304:3306'
     healthcheck:

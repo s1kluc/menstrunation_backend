@@ -1,23 +1,21 @@
 package com.example.demo.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class VibeDto {
-    private int id;
-    private int userId;
-    private LocalDateTime date;
+    private long id;
+    private long userId;
     private long anger;
     private boolean period;
-    private Integer blood;
+    private int blood;
     private String[] mood;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

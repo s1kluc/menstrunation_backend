@@ -1,0 +1,12 @@
+ALTER TABLE vibe DROP FOREIGN KEY vibe_ibfk_1;
+
+ALTER TABLE vibe
+    MODIFY COLUMN id BIGINT AUTO_INCREMENT;
+
+Alter TABLE user
+MODIFY COLUMN birthdate DATE;
+
+ALTER TABLE vibe
+Add CONSTRAINT fk_user_id
+FOREIGN KEY (user_id)
+REFERENCES user(id);

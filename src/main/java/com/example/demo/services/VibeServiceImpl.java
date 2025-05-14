@@ -3,91 +3,104 @@ package com.example.demo.services;
 import com.example.demo.model.Vibe;
 import com.example.demo.model.VibeDto;
 import com.example.demo.repository.VibeRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class VibeServiceImpl implements VibeService {
-    private VibeRepository vibeRepository;
+
+    private final VibeRepository vibeRepository;
 
     @Override
-    public VibeDto createNewVibe(VibeDto vibeDto, int userId) {
-        Vibe vibe = new Vibe();
-        vibe.setMood(String.join(",", vibeDto.getMood()));
-        vibe.setAnger(userId);
-        vibe.setBlood(vibe.getBlood());
-        vibe.setDate(vibe.getDate());
-        vibe.setPeriod(vibeDto.isPeriod());
+    public VibeDto createNewVibe(VibeDto vibeDto, long userId) {
+        Vibe vibe = Vibe.builder()
+                .userId(userId)
+                .anger(vibeDto.getAnger())
+                .blood(vibeDto.getBlood())
+                .period(vibeDto.isPeriod())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .mood(String.join(",", vibeDto.getMood()))
+                .build();
 
-        Vibe savedVibe = vibeRepository.save(vibe);
+        Vibe createdVibe = this.vibeRepository.save(vibe);
 
-        return new VibeDto(
-            savedVibe.getId(),
-            savedVibe.getUserId(),
-            savedVibe.getDate(),
-            savedVibe.getAnger(),
-            savedVibe.isPeriod(),
-            savedVibe.getBlood(),
-            savedVibe.getMood().split(",")
-        );
+        return VibeDto.builder()
+                .id(createdVibe.getId())
+                .userId(createdVibe.getUserId())
+                .anger(createdVibe.getAnger())
+                .blood(createdVibe.getBlood())
+                .period(createdVibe.isPeriod())
+                .updatedAt(createdVibe.getUpdatedAt())
+                .createdAt(createdVibe.getCreatedAt())
+                .mood(createdVibe.getMood().split(","))
+                .build();
     }
 
     @Override
-    public VibeDto updateVibe(VibeDto vibeDto, int userId) {
-        Vibe foundVibe = vibeRepository.findVibeByIdEqualsAndUserIdEquals(vibeDto.getId(), userId);
+    public void updateVibe(VibeDto vibeDto, long userId) {
+        Optional<Vibe> foundVibeOptional = Optional.ofNullable(this.vibeRepository.findVibeByIdEqualsAndUserIdEquals(vibeDto.getId(), userId));
+        //optionalCheck
+        Vibe foundVibe = foundVibeOptional.get();
 
         foundVibe.setPeriod(vibeDto.isPeriod());
         foundVibe.setMood(String.join(",", vibeDto.getMood()));
         foundVibe.setAnger(vibeDto.getAnger());
         foundVibe.setBlood(vibeDto.getBlood());
-        foundVibe.setDate(vibeDto.getDate());
+        foundVibe.setUpdatedAt(vibeDto.getUpdatedAt());
 
-        Vibe updatedVibe = vibeRepository.save(foundVibe);
-
-        return new VibeDto(
-            updatedVibe.getId(),
-            updatedVibe.getUserId(),
-            updatedVibe.getDate(),
-            updatedVibe.getAnger(),
-            updatedVibe.isPeriod(),
-            updatedVibe.getBlood(),
-            updatedVibe.getMood().split(",")
-        );
+        this.vibeRepository.save(foundVibe);
     }
 
     @Override
-    public List<VibeDto> getAllVibesInMonth(int month, int year) {
-        List<Vibe> vibeList = vibeRepository.findAllByDateMonthValueAndDateYear(month, year);
-        List<VibeDto> vibeDtoList = new ArrayList<VibeDto>();
+    public List<VibeDto> getAllVibesInMonth(int month, int year, long userId) {
+        LocalDateTime start = LocalDate.of(year, month, 1).atStartOfDay();
+        LocalDateTime end = start.plusMonths(1);
+        Optional<List<Vibe>> vibeListOptional = Optional.ofNullable(this.vibeRepository.findAllByCreatedAtBetweenAndUserId(start, end, userId));
+
+        //optionalCheck
+        List<Vibe> vibeList = vibeListOptional.get();
+        List<VibeDto> vibeDtoList = new ArrayList<>();
         for (Vibe vibe : vibeList) {
-            VibeDto vibeDto = new VibeDto(
-                vibe.getId(),
-                vibe.getUserId(),
-                vibe.getDate(),
-                vibe.getAnger(),
-                vibe.isPeriod(),
-                vibe.getBlood(),
-                vibe.getMood().split(",")
-            );
+            VibeDto vibeDto = VibeDto.builder()
+                    .id(vibe.getId())
+                    .userId(vibe.getUserId())
+                    .anger(vibe.getAnger())
+                    .blood(vibe.getBlood())
+                    .period(vibe.isPeriod())
+                    .mood(vibe.getMood().split(","))
+                    .updatedAt(vibe.getUpdatedAt())
+                    .createdAt(vibe.getCreatedAt())
+                    .build();
             vibeDtoList.add(vibeDto);
         }
         return vibeDtoList;
     }
 
     @Override
-    public VibeDto getVibeByDate(LocalDateTime date) {
-        Vibe vibe = vibeRepository.findVibeByDate(date);
-        return new VibeDto(
-            vibe.getId(),
-            vibe.getUserId(),
-            vibe.getDate(),
-            vibe.getAnger(),
-            vibe.isPeriod(),
-            vibe.getBlood(),
-            vibe.getMood().split(",")
-        );
+    public VibeDto getVibeByDate(LocalDateTime date, long userId) {
+        LocalDateTime specificDate = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), date.getHour(), date.getMinute());
+        Optional<Vibe> optionalVibe = Optional.ofNullable(this.vibeRepository.findVibeByCreatedAtEqualsAndUserId(specificDate, userId));
+
+        //optionalCheck
+        Vibe vibe = optionalVibe.get();
+
+        return VibeDto.builder()
+                .id(vibe.getId())
+                .userId(vibe.getUserId())
+                .anger(vibe.getAnger())
+                .blood(vibe.getBlood())
+                .period(vibe.isPeriod())
+                .mood(vibe.getMood().split(","))
+                .createdAt(vibe.getCreatedAt())
+                .updatedAt(vibe.getUpdatedAt())
+                .build();
     }
 }

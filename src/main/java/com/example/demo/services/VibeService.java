@@ -6,12 +6,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface VibeService {
-    VibeDto createNewVibe(VibeDto vibeDto, int userId);
+    VibeDto createNewVibe(VibeDto vibeDto, long userId);
 
-    VibeDto updateVibe(VibeDto vibeDto, int userId);
+    void updateVibe(VibeDto vibeDto, long userId);
 
-    List<VibeDto> getAllVibesInMonth(int month, int year);
+    List<VibeDto> getAllVibesInMonth(int month, int year, long userId);
 
-    VibeDto getVibeByDate(LocalDateTime date);
+    VibeDto getVibeByDate(LocalDateTime date, long userId);
 
 }

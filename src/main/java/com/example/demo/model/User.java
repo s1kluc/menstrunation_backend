@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -16,10 +17,12 @@ import java.util.Date;
 @AllArgsConstructor
 public class User {
     @Id
-    private Long id;
+    private long id;
     private String username;
     private String email;
     private Date birthdate;
     private float weight;
     private float height;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

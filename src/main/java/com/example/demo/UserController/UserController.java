@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @RestController
-@RequestMapping("/menstronation/api")
+@RequestMapping("/menstrunation/api")
 public class UserController {
 
     private final UserRepository userRepository;
@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @PostMapping("/getUser")
-    public ResponseEntity<User> getUser(@RequestBody Long id){
+    public ResponseEntity<User> getUser(@RequestBody Integer id){
 
         Optional<User> user = userRepository.findById(id);
 
@@ -47,55 +47,49 @@ public class UserController {
 
     @PutMapping("/editUser")
 public ResponseEntity<User> editUser(@RequestBody User user) {
-    // Проверка, существует ли пользователь с таким ID
+
     Optional<User> existingUserOptional = userRepository.findById(user.getId());
 
     if (existingUserOptional.isPresent()) {
         User existingUser = existingUserOptional.get();
 
-        // Обновляем все поля
+
         existingUser.setUsername(user.getUsername());
         existingUser.setEmail(user.getEmail());
         existingUser.setBirthdate(user.getBirthdate());
         existingUser.setWeight(user.getWeight());
         existingUser.setHeight(user.getHeight());
 
-        // Сохраняем
         User updatedUser = userRepository.save(existingUser);
         return ResponseEntity.ok(updatedUser);
     } else {
-        // Пользователь не найден
         return ResponseEntity.notFound().build();
     }
 }
 
 @PatchMapping("/editUser")
 public ResponseEntity<User> updateUser(@RequestBody User user) {
-    // Проверка, существует ли пользователь с таким ID
     Optional<User> existingUserOptional = userRepository.findById(user.getId());
 
     if (existingUserOptional.isPresent()) {
         User existingUser = existingUserOptional.get();
 
-        // Обновляем только те поля, которые были переданы
         if (user.getUsername() != null) existingUser.setUsername(user.getUsername());
         if (user.getEmail() != null) existingUser.setEmail(user.getEmail());
         if (user.getBirthdate() != null) existingUser.setBirthdate(user.getBirthdate());
         if (user.getWeight() != 0) existingUser.setWeight(user.getWeight());
         if (user.getHeight() != 0) existingUser.setHeight(user.getHeight());
 
-        // Сохраняем обновленного пользователя
         User updatedUser = userRepository.save(existingUser);
         return ResponseEntity.ok(updatedUser);
     } else {
-        // Если пользователь не найден
         return ResponseEntity.notFound().build();
     }
 }
 
 
     @DeleteMapping("/deleteUser")
-    public ResponseEntity<User> deleteUser(@RequestBody Long id) {
+    public ResponseEntity<User> deleteUser(@RequestBody Integer id) {
         Optional<User> user = userRepository.findById(id); 
 
     if (user.isPresent()) {

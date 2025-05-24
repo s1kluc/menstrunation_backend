@@ -2,7 +2,7 @@ package com.example.demo.services;
 
 import com.example.demo.model.VibeDto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface VibeService {
@@ -12,6 +12,5 @@ public interface VibeService {
 
     List<VibeDto> getAllVibesInMonth(int month, int year, long userId);
 
-    VibeDto getVibeByDate(LocalDateTime date, long userId);
-
+    VibeDto getVibeByDate(LocalDate date, long userId);
 }

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +33,7 @@ public class VibeServiceImpl implements VibeService {
             .mood(String.join(",", vibeDto.getMood()))
             .build();
 
-        //Hier noch OptionalCheck einbauen
-        Optional<Vibe> optionalVibe = Optional.of(this.vibeRepository.save(vibe));
-
-        Vibe createdVibe = optionalVibe.get();
+        Vibe createdVibe = this.vibeRepository.save(vibe);
 
         return VibeDto.builder()
             .id(createdVibe.getId())
@@ -58,9 +54,7 @@ public class VibeServiceImpl implements VibeService {
      */
     @Override
     public void updateVibe(VibeDto vibeDto, long userId) {
-        Optional<Vibe> optionalVibe = Optional.of(this.vibeRepository.findVibeByIdAndUserId(vibeDto.getId(), userId));
-
-        Vibe foundVibe = optionalVibe.get();
+        Vibe foundVibe = this.vibeRepository.findVibeByIdAndUserId(vibeDto.getId(), userId);
 
         foundVibe.setPeriod(vibeDto.isPeriod());
         foundVibe.setMood(String.join(",", vibeDto.getMood()));
@@ -83,13 +77,11 @@ public class VibeServiceImpl implements VibeService {
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.plusMonths(1);
 
-        Optional<List<Vibe>> optionalVibes = Optional.of(this.vibeRepository.findAllByCreatedAtBetweenAndUserId(
+        List<Vibe> vibeList = this.vibeRepository.findAllByCreatedAtBetweenAndUserId(
             startDate,
             endDate,
             userId
-        ));
-
-        List<Vibe> vibeList = optionalVibes.get();
+        );
 
         List<VibeDto> vibeDtoList = new ArrayList<>();
         for (Vibe vibe : vibeList) {
@@ -116,8 +108,7 @@ public class VibeServiceImpl implements VibeService {
      */
     @Override
     public VibeDto getVibeByDate(LocalDate date, long userId) {
-        Optional<Vibe> optionalVibe = Optional.of(this.vibeRepository.findVibeByCreatedAtAndUserId(date, userId));
-        Vibe vibe = optionalVibe.get();
+        Vibe vibe = this.vibeRepository.findVibeByCreatedAtAndUserId(date, userId);
 
         return VibeDto.builder()
             .id(vibe.getId())

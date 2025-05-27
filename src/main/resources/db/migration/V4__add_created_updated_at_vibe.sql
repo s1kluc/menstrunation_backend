@@ -1,0 +1,10 @@
+ALTER TABLE vibe
+ADD COLUMN created_at DATETIME,
+ADD COLUMN updated_at DATETIME;
+
+ALTER TABLE user
+ADD COLUMN created_at DATETIME,
+ADD COLUMN updated_at DATETIME;
+
+ALTER TABLE vibe
+DROP COLUMN date;

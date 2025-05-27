@@ -19,6 +19,7 @@ services:
   phpmyadmin:
     container_name: menstrunation_phpmyadmin
     image: phpmyadmin/phpmyadmin:latest
+#    platform: linux/amd64
     ports:
       - '4305:80'
     environment:

@@ -1,26 +1,33 @@
 package com.example.demo.model;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import java.time.LocalDate;
+
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
-import java.time.LocalDateTime;
+
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Setter
+@Builder
 public class Vibe {
     @Id
-    private int id;
-    private int userId;
-    private LocalDateTime date;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    private long userId;
     private long anger;
     private boolean period;
-    private Integer blood; // Kann null sein, wenn keine Periode
+    private int blood;
     private String mood;
-
+    private LocalDate createdAt;
 }

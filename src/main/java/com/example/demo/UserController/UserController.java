@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+// или
+// import javax.persistence.Entity; // если JPA старее (Spring Boot 2.x)
+
+
 
 
 
@@ -28,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping("/getUser")
-    public ResponseEntity<User> getUser(@RequestBody Integer id){
+    public ResponseEntity<User> getUser(@RequestBody Long id){
 
         Optional<User> user = userRepository.findById(id);
 
@@ -89,7 +93,7 @@ public ResponseEntity<User> updateUser(@RequestBody User user) {
 
 
     @DeleteMapping("/deleteUser")
-    public ResponseEntity<User> deleteUser(@RequestBody Integer id) {
+    public ResponseEntity<User> deleteUser(@RequestBody Long id) {
         Optional<User> user = userRepository.findById(id); 
 
     if (user.isPresent()) {

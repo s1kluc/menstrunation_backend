@@ -16,6 +16,15 @@ services:
     networks:
       - menstrunation_net
 
+  mariadb-test:
+    container_name: menstrunation_test_db
+    image: mariadb:10.11
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: menstrunation_test
+    ports:
+      - '4305:3306'
+
   phpmyadmin:
     container_name: menstrunation_phpmyadmin
     image: phpmyadmin/phpmyadmin:latest
@@ -28,37 +37,6 @@ services:
         condition: service_healthy
     networks:
       - menstrunation_net
-#
-#  menstrunation_app:
-#    build: .
-#    container_name: menstrunation_spring_app
-##    working_dir: /app
-##    volumes:
-##      - .:/app
-##    command: sh -c "./gradlew build --exclude-task test && java -jar build/libs/*.jar"
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      mariadb:
-#        condition: service_healthy
-#      phpmyadmin:
-#        condition: service_started
-#    restart: unless-stopped
-#
-##  menstrunation_app:
-##    container_name: menstrunation_spring_app
-##    build:
-##      context: .
-##    ports:
-##      - "8080:8080"
-##    depends_on:
-##      mariadb:
-##        condition: service_healthy
-##      phpmyadmin:
-##        condition: service_started
-##    restart: always
-##    networks:
-##      - menstrunation_net
 
 networks:
   menstrunation_net:

@@ -4,7 +4,7 @@ services:
     image: mariadb:10.11
     environment:
       MARIADB_ROOT_PASSWORD: root
-      MARIADB_DATABASE: menstrunation
+      MARIADB_DATABASE: menstrunation_db
     ports:
       - '4304:3306'
     healthcheck:
@@ -28,37 +28,24 @@ services:
         condition: service_healthy
     networks:
       - menstrunation_net
-#
-#  menstrunation_app:
-#    build: .
-#    container_name: menstrunation_spring_app
-##    working_dir: /app
-##    volumes:
-##      - .:/app
-##    command: sh -c "./gradlew build --exclude-task test && java -jar build/libs/*.jar"
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      mariadb:
-#        condition: service_healthy
-#      phpmyadmin:
-#        condition: service_started
-#    restart: unless-stopped
-#
-##  menstrunation_app:
-##    container_name: menstrunation_spring_app
-##    build:
-##      context: .
-##    ports:
-##      - "8080:8080"
-##    depends_on:
-##      mariadb:
-##        condition: service_healthy
-##      phpmyadmin:
-##        condition: service_started
-##    restart: always
-##    networks:
-##      - menstrunation_net
+
+  menstrunation_app:
+    container_name: menstrunation_spring_app
+    image: amazoncorretto:23-alpine-full
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: [ "sh", "-c", "apk add --no-cache findutils && ./gradlew clean bootJar -x test && java -jar build/libs/*.jar" ]
+    ports:
+      - "8080:8080"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      phpmyadmin:
+        condition: service_started
+    restart: always
+    networks:
+      - menstrunation_net
 
 networks:
   menstrunation_net:

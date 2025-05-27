@@ -3,4 +3,3 @@ build/
 .idea/
 mysql_data/
 .gradle/
-.yml

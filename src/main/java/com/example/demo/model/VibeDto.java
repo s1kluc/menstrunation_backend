@@ -10,9 +10,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class VibeDto {
-    private long id;
-    private long userId;
-    private long anger;
+    private Long id;
+    private Long userId;
+    private Long anger;
     private boolean period;
     private int blood;
     private String[] mood;

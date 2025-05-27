@@ -30,13 +30,31 @@ services:
     networks:
       - menstrunation_net
 
+#  menstrunation_app:
+#    container_name: menstrunation_spring_app
+#    image: amazoncorretto:23-alpine-full
+#    working_dir: /app
+#    volumes:
+#      - ./:/app
+#    command: [ "sh", "-c", "apk add --no-cache findutils && ./gradlew wrapper --gradle-version 8.13 && ./gradlew --no-daemon clean && ./gradlew bootJar -x test --stacktrace && java -jar build/libs/*.jar" ]
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      mariadb:
+#        condition: service_healthy
+#      phpmyadmin:
+#        condition: service_started
+#    restart: always
+#    networks:
+#      - menstrunation_net
+
   menstrunation_app:
     container_name: menstrunation_spring_app
-    image: amazoncorretto:23-alpine-full
+    image: eclipse-temurin:21-jdk-alpine
     working_dir: /app
     volumes:
       - ./:/app
-    command: [ "sh", "-c", "apk add --no-cache findutils && ./gradlew clean bootJar -x test && java -jar build/libs/*.jar" ]
+    command: [ "sh", "-c", "apk add --no-cache findutils && ./gradlew --no-daemon clean && ./gradlew bootJar -x test --stacktrace && java -jar build/libs/*.jar" ]
     ports:
       - "8080:8080"
     depends_on:
@@ -44,7 +62,7 @@ services:
         condition: service_healthy
       phpmyadmin:
         condition: service_started
-    restart: always
+    restart: unless-stopped
     networks:
       - menstrunation_net
 

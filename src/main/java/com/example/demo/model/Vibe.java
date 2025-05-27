@@ -23,9 +23,9 @@ import lombok.Builder;
 public class Vibe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private long userId;
-    private long anger;
+    private Long id;
+    private Long userId;
+    private Long anger;
     private boolean period;
     private int blood;
     private String mood;

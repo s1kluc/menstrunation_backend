@@ -1,12 +1,18 @@
 package com.example.demo.model;
-
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.*;
-
 import java.time.LocalDate;
+
+
+import jakarta.persistence.Entity;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
+
 
 @Getter
 @NoArgsConstructor
@@ -17,9 +23,9 @@ import java.time.LocalDate;
 public class Vibe {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private long userId;
-    private long anger;
+    private Long id;
+    private Long userId;
+    private Long anger;
     private boolean period;
     private int blood;
     private String mood;

@@ -36,7 +36,7 @@ class VibeServiceImplTest {
         vibeDto = new VibeDto(
             1L,
             1L,
-            12,
+            12L,
             true,
             1,
             new String[]{"test1", "test2", "test3", "test4"},
@@ -45,7 +45,7 @@ class VibeServiceImplTest {
         Vibe vibe1 = new Vibe(
             1L,
             1L,
-            12,
+            12L,
             true,
             1,
             "test1,test2,test3,test4",
@@ -54,7 +54,7 @@ class VibeServiceImplTest {
         Vibe vibe2 = new Vibe(
             2L,
             1L,
-            12,
+            12L,
             true,
             1,
             "happy,clappy,sad",
@@ -77,7 +77,7 @@ class VibeServiceImplTest {
         VibeDto updatedVibeDto = new VibeDto(
             1L,
             1L,
-            12,
+            12L,
             true,
             1,
             new String[]{"bla1", "bla2", "bla3"},

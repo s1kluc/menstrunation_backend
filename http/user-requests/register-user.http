@@ -1,0 +1,11 @@
+POST http://localhost:8080/menstrunation/api/register
+Content-Type: application/json
+
+{
+"username": "wienerGurke",
+"email": "pi@pipi.pi",
+"birthdate": "2004-03-04",
+"weight": 12.11,
+"height": 12.9,
+"password": "PickelAufPopo"
+}

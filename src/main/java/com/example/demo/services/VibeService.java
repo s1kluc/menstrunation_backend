@@ -1,16 +1,19 @@
 package com.example.demo.services;
 
 import com.example.demo.model.VibeDto;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public interface VibeService {
-    VibeDto createNewVibe(VibeDto vibeDto, long userId);
+    VibeDto createNewVibe(VibeDto vibeDto, long userId) throws HttpClientErrorException;
 
-    void updateVibe(VibeDto vibeDto, long userId);
+    void updateVibe(VibeDto vibeDto, long userId) throws HttpClientErrorException;
 
-    List<VibeDto> getAllVibesInMonth(int month, int year, long userId);
+    List<VibeDto> getAllVibesInMonth(int month, int year, long userId) throws HttpClientErrorException;
 
-    VibeDto getVibeByDate(LocalDate date, long userId);
+    VibeDto getVibeByDate(LocalDate date, long userId) throws HttpClientErrorException;
+
+    void deleteVibe(long vibeId, long userId) throws HttpClientErrorException;
 }

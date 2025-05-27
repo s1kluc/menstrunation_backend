@@ -12,4 +12,6 @@ public interface VibeRepository extends JpaRepository<Vibe, Long> {
     List<Vibe> findAllByCreatedAtBetweenAndUserId(LocalDate createdAtAfter, LocalDate createdAtBefore, long userId);
 
     Vibe findVibeByIdAndUserId(long id, long userId);
+
+    void deleteVibeByIdAndUserId(long id, long userId);
 }

@@ -1,0 +1,18 @@
+### Aktualisiert ein Vibe-Objekt
+PUT http://localhost:8080/menstrunation/api/vibe
+Content-Type: application/json
+Authorization: Bearer {{jwt}}
+
+{
+  "id": 1,
+  "anger": 999,
+  "period": true,
+  "blood": 2,
+  "mood": [
+    "mein",
+    "linker",
+    "Sack",
+    "hat",
+    "pickel"
+  ]
+}

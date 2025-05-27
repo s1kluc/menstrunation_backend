@@ -2,44 +2,60 @@ package com.example.demo.controller;
 
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.utils.JwtUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
-// или
-// import javax.persistence.Entity; // если JPA старее (Spring Boot 2.x)
-
+/**
+ * Schnittstelle die sich um ein UserObjekt kümmert.
+ */
 @RestController
 @RequestMapping("/menstrunation/api")
+@RequiredArgsConstructor
 public class UserController {
     private final UserRepository userRepository;
+    private final JwtUtils jwtUtils;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
+    /**
+     * Liefert anhand des JWT den User zurück
+     *
+     * @param bearerToken ein Bearer Token
+     * @return den gefundenen User
+     * @throws HttpClientErrorException Wenn ein Fehler auftritt
+     */
     @PostMapping("/getUser")
-    public ResponseEntity<User> getUser(@RequestBody Long id) {
+    public ResponseEntity<User> getUser(
+        @RequestHeader("Authorization") String bearerToken
+    ) throws
+      HttpClientErrorException {
 
-        Optional<User> user = userRepository.findById(id);
+        Optional<User> user = userRepository.findById(
+            this.jwtUtils.parseToken(this.jwtUtils.returnJwt(bearerToken)).get("userId", Long.class)
+        );
 
         return user.map(ResponseEntity::ok)
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/saveUser")
-    public ResponseEntity<User> saveUser(@RequestBody User user) {
-
-        User savedUser = userRepository.save(user);
-
-        return ResponseEntity.status(201).body(savedUser);
-    }
-
+    /**
+     * Aktualisiert einen User
+     *
+     * @param bearerToken ein Bearer Token
+     * @param user        der zu aktualisierende User
+     * @return Der aktualisierte User
+     * @throws HttpClientErrorException Wenn ein Fehler auftritt
+     */
     @PutMapping("/editUser")
-    public ResponseEntity<User> editUser(@RequestBody User user) {
+    public ResponseEntity<User> editUser(@RequestHeader("Authorization") String bearerToken, @RequestBody User user)
+        throws HttpClientErrorException {
 
-        Optional<User> existingUserOptional = userRepository.findById(user.getId());
+        Optional<User> existingUserOptional = userRepository.findById(this.jwtUtils.parseToken(this.jwtUtils.returnJwt(bearerToken))
+                                                                          .get("userId", Long.class));
 
         if (existingUserOptional.isPresent()) {
             User existingUser = existingUserOptional.get();
@@ -49,6 +65,8 @@ public class UserController {
             existingUser.setBirthdate(user.getBirthdate());
             existingUser.setWeight(user.getWeight());
             existingUser.setHeight(user.getHeight());
+            existingUser.setPassword(user.getPassword());
+            existingUser.setUpdatedAt(LocalDate.now().atStartOfDay());
 
             User updatedUser = userRepository.save(existingUser);
             return ResponseEntity.ok(updatedUser);
@@ -57,9 +75,19 @@ public class UserController {
         }
     }
 
+    /**
+     * Aktualisiert einen User
+     *
+     * @param bearerToken ein Bearer Token
+     * @param user        der zu aktualisierende User
+     * @return Der aktualisierte User
+     * @throws HttpClientErrorException Wenn ein Fehler auftritt
+     */
     @PatchMapping("/editUser")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
-        Optional<User> existingUserOptional = userRepository.findById(user.getId());
+    public ResponseEntity<User> updateUser(@RequestHeader("Authorization") String bearerToken, @RequestBody User user)
+        throws HttpClientErrorException {
+        Optional<User> existingUserOptional = userRepository.findById(this.jwtUtils.parseToken(this.jwtUtils.returnJwt(bearerToken))
+                                                                          .get("userId", Long.class));
 
         if (existingUserOptional.isPresent()) {
             User existingUser = existingUserOptional.get();
@@ -79,7 +107,7 @@ public class UserController {
             if (user.getHeight() != 0) {
                 existingUser.setHeight(user.getHeight());
             }
-
+            user.setUpdatedAt(LocalDate.now().atStartOfDay());
             User updatedUser = userRepository.save(existingUser);
             return ResponseEntity.ok(updatedUser);
         } else {
@@ -87,12 +115,20 @@ public class UserController {
         }
     }
 
+    /**
+     * Löscht einen User aus der Datenbank
+     *
+     * @param bearerToken ein Token mit einem zugehörigen User
+     * @return No Content, da user erfolgreich gelöscht wurde
+     * @throws HttpClientErrorException Wenn ein Fehler auftritt
+     */
     @DeleteMapping("/deleteUser")
-    public ResponseEntity<User> deleteUser(@RequestBody Long id) {
-        Optional<User> user = userRepository.findById(id);
+    public ResponseEntity<User> deleteUser(@RequestHeader("Authorization") String bearerToken) throws HttpClientErrorException {
+        Optional<User> user = userRepository.findById(this.jwtUtils.parseToken(this.jwtUtils.returnJwt(bearerToken))
+                                                          .get("userId", Long.class));
 
         if (user.isPresent()) {
-            userRepository.deleteById(id);
+            userRepository.deleteById(user.get().getId());
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();

@@ -1,0 +1,39 @@
+###Holt sich einen validen JWT
+POST http://localhost:8080/menstrunation/api/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "ILoveBockwurst69"
+}
+
+> {%
+    client.global.set("jwt", response.body.valueOf());
+%}
+
+### Funktionierender Login
+POST http://localhost:8080/menstrunation/api/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "ILoveBockwurst69"
+}
+
+### Falsches Passwort
+POST http://localhost:8080/menstrunation/api/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "ClubMateIsBad"
+}
+
+### Nicht vorhandener User
+POST http://localhost:8080/menstrunation/api/login
+Content-Type: application/json
+
+{
+  "username": "notFoundDoe",
+  "password": "ILoveBockwurst69"
+}

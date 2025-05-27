@@ -1,0 +1,15 @@
+### Erstellt ein neues Vibe Objekt
+POST http://localhost:8080/menstrunation/api/vibe
+Content-Type: application/json
+Authorization: Bearer {{jwt}}
+
+{
+  "anger": 23,
+  "period": false,
+  "blood": 2,
+  "mood": [
+    "leck",
+    "mein",
+    "ei"
+  ]
+}

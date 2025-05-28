@@ -55,6 +55,12 @@ public class LoginServiceImpl implements LoginService {
         user.setCreatedAt(LocalDateTime.now());
         user.setPassword(this.bCryptUtils.hashPassword(user.getPassword()));
         try {
+            if (this.userRepository.existsUserByUsernameAndEmail(user.getUsername(), user.getEmail())) {
+                throw new HttpClientErrorException(
+                    HttpStatusCode.valueOf(403),
+                    "Ein User mit dem Usernamen " + user.getUsername() + " existiert bereits."
+                );
+            }
             this.userRepository.save(user);
         } catch (Exception e) {
             throw new HttpClientErrorException(HttpStatusCode.valueOf(500), e.getMessage());

@@ -4,12 +4,18 @@ import com.example.demo.model.Vibe;
 import com.example.demo.model.VibeDto;
 import com.example.demo.repository.VibeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Serviceklasse welche sich um das Handling von Vibes kümmert.
+ */
 @Service
 @RequiredArgsConstructor
 public class VibeServiceImpl implements VibeService {
@@ -23,7 +29,7 @@ public class VibeServiceImpl implements VibeService {
      * @return das erstellte Vibe-Objekt
      */
     @Override
-    public VibeDto createNewVibe(VibeDto vibeDto, long userId) {
+    public VibeDto createNewVibe(VibeDto vibeDto, long userId) throws HttpClientErrorException {
         Vibe vibe = Vibe.builder()
             .userId(userId)
             .anger(vibeDto.getAnger())
@@ -32,9 +38,12 @@ public class VibeServiceImpl implements VibeService {
             .createdAt(LocalDate.now())
             .mood(String.join(",", vibeDto.getMood()))
             .build();
-
-        Vibe createdVibe = this.vibeRepository.save(vibe);
-
+        Vibe createdVibe;
+        try {
+            createdVibe = this.vibeRepository.save(vibe);
+        } catch (Exception e) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
         return VibeDto.builder()
             .id(createdVibe.getId())
             .userId(createdVibe.getUserId())
@@ -53,9 +62,13 @@ public class VibeServiceImpl implements VibeService {
      * @param userId  die User-Id
      */
     @Override
-    public void updateVibe(VibeDto vibeDto, long userId) {
-        Vibe foundVibe = this.vibeRepository.findVibeByIdAndUserId(vibeDto.getId(), userId);
-
+    public void updateVibe(VibeDto vibeDto, long userId) throws HttpClientErrorException {
+        Vibe foundVibe;
+        try {
+            foundVibe = this.vibeRepository.findVibeByIdAndUserId(vibeDto.getId(), userId);
+        } catch (Exception e) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
         foundVibe.setPeriod(vibeDto.isPeriod());
         foundVibe.setMood(String.join(",", vibeDto.getMood()));
         foundVibe.setAnger(vibeDto.getAnger());
@@ -73,15 +86,19 @@ public class VibeServiceImpl implements VibeService {
      * @return die gefundenen Vibe-Objekte
      */
     @Override
-    public List<VibeDto> getAllVibesInMonth(int month, int year, long userId) {
+    public List<VibeDto> getAllVibesInMonth(int month, int year, long userId) throws HttpClientErrorException {
         LocalDate startDate = LocalDate.of(year, month, 1);
         LocalDate endDate = startDate.plusMonths(1);
-
-        List<Vibe> vibeList = this.vibeRepository.findAllByCreatedAtBetweenAndUserId(
-            startDate,
-            endDate,
-            userId
-        );
+        List<Vibe> vibeList;
+        try {
+            vibeList = this.vibeRepository.findAllByCreatedAtBetweenAndUserId(
+                startDate,
+                endDate,
+                userId
+            );
+        } catch (Exception e) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
 
         List<VibeDto> vibeDtoList = new ArrayList<>();
         for (Vibe vibe : vibeList) {
@@ -107,17 +124,32 @@ public class VibeServiceImpl implements VibeService {
      * @return das gefundene Vibe-Objekt
      */
     @Override
-    public VibeDto getVibeByDate(LocalDate date, long userId) {
-        Vibe vibe = this.vibeRepository.findVibeByCreatedAtAndUserId(date, userId);
+    public VibeDto getVibeByDate(LocalDate date, long userId) throws HttpClientErrorException {
+        Vibe foundVibe;
+        try {
+            foundVibe = this.vibeRepository.findFirstByCreatedAtAndUserId(date, userId);
+        } catch (Exception e) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
 
         return VibeDto.builder()
-            .id(vibe.getId())
-            .userId(vibe.getUserId())
-            .anger(vibe.getAnger())
-            .blood(vibe.getBlood())
-            .period(vibe.isPeriod())
-            .mood(vibe.getMood().split(","))
-            .createdAt(vibe.getCreatedAt())
+            .id(foundVibe.getId())
+            .userId(foundVibe.getUserId())
+            .anger(foundVibe.getAnger())
+            .blood(foundVibe.getBlood())
+            .period(foundVibe.isPeriod())
+            .mood(foundVibe.getMood().split(","))
+            .createdAt(foundVibe.getCreatedAt())
             .build();
+    }
+
+    @Override
+    @Transactional
+    public void deleteVibe(long id, long userId) throws HttpClientErrorException {
+        try {
+            this.vibeRepository.deleteVibeByIdAndUserId(id, userId);
+        } catch (Exception e) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 }

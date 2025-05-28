@@ -108,7 +108,7 @@ class VibeServiceImplTest {
 
     @Test
     void getVibeByDate() {
-        given(vibeRepository.findVibeByCreatedAtAndUserId(any(LocalDate.class), any(Long.class))).willReturn(vibeList.getFirst());
+        given(vibeRepository.findFirstByCreatedAtAndUserId(any(LocalDate.class), any(Long.class))).willReturn(vibeList.getFirst());
         VibeDto result = this.vibeService.getVibeByDate(LocalDate.of(2025, 1, 1), 1L);
 
         assertThat(result).isNotNull();

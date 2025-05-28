@@ -6,7 +6,6 @@ import com.example.demo.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
@@ -87,7 +86,7 @@ public class VibeController {
         @RequestBody VibeDto vibeDto,
         @RequestHeader("Authorization") String bearerToken
     ) throws HttpClientErrorException {
-        this.vibeService.updateVibe(vibeDto, this.jwtUtils.parseToken(this.jwtUtils.returnJwt(bearerToken)).get("userid", Long.class));
+        this.vibeService.updateVibe(vibeDto, this.jwtUtils.parseToken(this.jwtUtils.returnJwt(bearerToken)).get("userId", Long.class));
     }
 
     /**
@@ -100,14 +99,11 @@ public class VibeController {
     @DeleteMapping
     public ResponseEntity<String> deleteVibe(@RequestBody VibeDto vibeDto, @RequestHeader("Authorization") String bearerToken)
         throws HttpClientErrorException {
-        try {
-            this.vibeService.deleteVibe(
-                vibeDto.getId(),
-                this.jwtUtils.parseToken(this.jwtUtils.returnJwt(bearerToken)).get("userid", Long.class)
-            );
-        } catch (Exception e) {
-            throw new HttpClientErrorException(HttpStatusCode.valueOf(403), e.getMessage());
-        }
+
+        this.vibeService.deleteVibe(
+            vibeDto.getId(),
+            this.jwtUtils.parseToken(this.jwtUtils.returnJwt(bearerToken)).get("userId", Long.class)
+        );
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

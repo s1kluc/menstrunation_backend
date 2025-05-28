@@ -11,21 +11,7 @@ Content-Type: application/json
     client.global.set("jwt", response.body.valueOf());
 %}
 
-### Aktualisiert ein Vibe-Objekt
-PUT http://localhost:8080/menstrunation/api/vibe
+### Erstellt ein neues Vibe Objekt
+GET http://localhost:8080/menstrunation/api/vibe/monthly?year=2025&month=5
 Content-Type: application/json
 Authorization: Bearer {{jwt}}
-
-{
-  "id": 2,
-  "anger": 999,
-  "period": true,
-  "blood": 2,
-  "mood": [
-    "testestsetstes",
-    "linker",
-    "Sack",
-    "hat",
-    "pickel"
-  ]
-}

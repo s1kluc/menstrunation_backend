@@ -6,6 +6,7 @@ import com.example.demo.repository.VibeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
@@ -126,7 +127,7 @@ public class VibeServiceImpl implements VibeService {
     public VibeDto getVibeByDate(LocalDate date, long userId) throws HttpClientErrorException {
         Vibe foundVibe;
         try {
-            foundVibe = this.vibeRepository.findVibeByCreatedAtAndUserId(date, userId);
+            foundVibe = this.vibeRepository.findFirstByCreatedAtAndUserId(date, userId);
         } catch (Exception e) {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
@@ -143,6 +144,7 @@ public class VibeServiceImpl implements VibeService {
     }
 
     @Override
+    @Transactional
     public void deleteVibe(long id, long userId) throws HttpClientErrorException {
         try {
             this.vibeRepository.deleteVibeByIdAndUserId(id, userId);

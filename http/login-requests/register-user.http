@@ -1,3 +1,4 @@
+###Registriert einen neuen User
 POST http://localhost:8080/menstrunation/api/register
 Content-Type: application/json
 
@@ -8,4 +9,13 @@ Content-Type: application/json
 "weight": 12.11,
 "height": 12.9,
 "password": "PickelAufPopo"
+}
+
+### Registriert Testuser falsch gelöscht
+POST http://localhost:8080/menstrunation/api/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "ILoveBockwurst69"
 }

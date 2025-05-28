@@ -17,7 +17,7 @@ import java.util.Date;
  */
 @Service
 public class JwtUtils {
-    private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor("meinSuperGeheimesPasswort1234567890!".getBytes());
+    private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor("ClubMateIstDasBesteUndIstBesserAlsSoEinPupsWasserWieCrystalPepsi123!".getBytes());
     private static final long EXPIRATION_TIME = 3600_000;
 
     /**

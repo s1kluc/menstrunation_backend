@@ -4,7 +4,6 @@ import com.example.demo.Utils.TestBase;
 import com.example.demo.model.Vibe;
 import com.example.demo.model.VibeDto;
 import com.example.demo.repository.VibeRepository;
-import com.example.demo.services.VibeService;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,8 +28,6 @@ class VibeControllerTest extends TestBase {
     private Flyway flyway;
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    private VibeService vibeService;
     @Autowired
     private VibeRepository vibeRepository;
 

@@ -12,6 +12,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
@@ -20,6 +25,7 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 
@@ -65,10 +71,11 @@ public class AuthConfig {
     public RegisteredClientRepository registeredClientRepository() {
         RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("client")
-                .clientSecret("{noop}secret")
+                .clientSecret("secret")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .authorizationGrantType(AuthorizationGrantType.PASSWORD)
                 .redirectUri("http://localhost:8080/login/oauth2/code/client-oidc")
                 .scope(OidcScopes.OPENID)
                 .scope("read")
@@ -76,6 +83,17 @@ public class AuthConfig {
 
         return new InMemoryRegisteredClientRepository(registeredClient);
     }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        UserDetails user = User.withUsername("user")
+                .password("password") // Use PasswordEncoder in production
+                .roles("USER")
+                .build();
+
+        return new InMemoryUserDetailsManager(user);
+    }
+
 
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
@@ -90,4 +108,10 @@ public class AuthConfig {
                 .issuer(host)
                 .build();
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
 }

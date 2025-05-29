@@ -1,0 +1,3 @@
+ALTER TABLE vibe
+DROP COLUMN updated_at,
+MODIFY COLUMN created_at DATE;

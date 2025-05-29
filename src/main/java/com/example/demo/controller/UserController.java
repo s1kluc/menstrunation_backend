@@ -70,7 +70,7 @@ public class UserController {
             existingUser.setBirthdate(user.getBirthdate());
             existingUser.setWeight(user.getWeight());
             existingUser.setHeight(user.getHeight());
-            existingUser.setPassword(this.bCryptUtils.hashPassword(user.getPassword()));
+            existingUser.setPassword(this.bCryptUtils.encode(user.getPassword()));
             existingUser.setUpdatedAt(LocalDate.now().atStartOfDay());
 
             User updatedUser = this.userRepository.save(existingUser);

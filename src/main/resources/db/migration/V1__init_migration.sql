@@ -6,3 +6,6 @@ CREATE TABLE user (
     weight FLOAT,
     height FLOAT
 );
+
+INSERT INTO user (username, email, birthdate, weight, height)
+VALUES ('JohnDoe', 'johndoe@example.com', '1990-05-10', 70.5, 175.0);

@@ -2,7 +2,7 @@ package com.example.demo.model;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -10,12 +10,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class VibeDto {
-    private long id;
-    private long userId;
-    private long anger;
+    private Long id;
+    private Long userId;
+    private Long anger;
     private boolean period;
     private int blood;
     private String[] mood;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDate createdAt;
 }

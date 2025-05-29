@@ -6,6 +6,12 @@ import com.example.demo.utils.BCryptUtils;
 import com.example.demo.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -19,6 +25,8 @@ import java.time.LocalDateTime;
 public class LoginServiceImpl implements LoginService {
     private final UserRepository userRepository;
     private final BCryptUtils bCryptUtils;
+    private final AuthenticationManager authManager;
+    private final RegisteredClientRepository clientRepo;
     private final JwtUtils jwtUtils;
 
     /**
@@ -30,7 +38,12 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     public String login(User user) throws HttpClientErrorException {
-        User foundUser = this.userRepository.findByUsername(user.getUsername());
+        Authentication authentication = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+        );
+
+        RegisteredClient client = clientRepo.findByClientId("client");
+        User foundUser =(User) authManager.authenticate(authentication).getPrincipal();
 
         if (foundUser == null) {
             throw new HttpClientErrorException(HttpStatusCode.valueOf(404), "Der User konnte nicht gefunden werden.");
@@ -53,7 +66,7 @@ public class LoginServiceImpl implements LoginService {
     public void register(User user) throws HttpClientErrorException {
         user.setUpdatedAt(LocalDateTime.now());
         user.setCreatedAt(LocalDateTime.now());
-        user.setPassword(this.bCryptUtils.hashPassword(user.getPassword()));
+        user.setPassword(bCryptUtils.encode(user.getPassword()));
         try {
             if (this.userRepository.existsUserByUsernameAndEmail(user.getUsername(), user.getEmail())) {
                 throw new HttpClientErrorException(

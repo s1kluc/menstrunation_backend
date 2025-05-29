@@ -2,6 +2,7 @@ package com.example.demo.utils;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
  */
 @RequiredArgsConstructor
 @Service
-public class BCryptUtils {
+public class BCryptUtils implements PasswordEncoder {
     private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     /**
@@ -17,7 +18,7 @@ public class BCryptUtils {
      * @param password das Passwort als String
      * @return ein gesaltetes und gehashtes Passwort
      */
-    public String hashPassword(String password) {
+    private String hashPassword(String password) {
         return encoder.encode(password);
     }
 
@@ -29,5 +30,15 @@ public class BCryptUtils {
      */
     public boolean matchPassword(String password, String hashed) {
         return encoder.matches(password, hashed);
+    }
+
+    @Override
+    public String encode(CharSequence rawPassword) {
+        return hashPassword(rawPassword.toString());
+    }
+
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        return matchPassword(rawPassword.toString(), encodedPassword);
     }
 }

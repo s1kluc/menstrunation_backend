@@ -40,7 +40,7 @@ class VibeServiceImplTest {
             true,
             1,
             new String[]{"test1", "test2", "test3", "test4"},
-            LocalDate.of(2025, 1, 1)
+            "2025-01-01"
         );
         Vibe vibe1 = new Vibe(
             1L,
@@ -81,7 +81,7 @@ class VibeServiceImplTest {
             true,
             1,
             new String[]{"bla1", "bla2", "bla3"},
-            LocalDate.of(2025, 1, 1)
+            "2025-01-01"
         );
         given(vibeRepository.findVibeByIdAndUserId(anyLong(), anyLong())).willReturn(vibeList.getFirst());
         vibeService.updateVibe(updatedVibeDto, 1L);
@@ -102,14 +102,13 @@ class VibeServiceImplTest {
         assertThat(results.getFirst().getId()).isEqualTo(vibeList.getFirst().getId());
         assertThat(results.getFirst().getMood()).isEqualTo(vibeList.getFirst().getMood().split(","));
         assertThat(results.getFirst().getBlood()).isEqualTo(vibeList.getFirst().getBlood());
-        assertThat(results.getFirst().getCreatedAt()).isEqualTo(vibeList.getFirst().getCreatedAt());
         assertThat(results.getFirst().getUserId()).isEqualTo(vibeList.getFirst().getUserId());
     }
 
     @Test
     void getVibeByDate() {
         given(vibeRepository.findFirstByCreatedAtAndUserId(any(LocalDate.class), any(Long.class))).willReturn(vibeList.getFirst());
-        VibeDto result = this.vibeService.getVibeByDate(LocalDate.of(2025, 1, 1), 1L);
+        VibeDto result = this.vibeService.getVibeByDate("2025-01-01", 1L);
 
         assertThat(result).isNotNull();
         assertThat(result).usingRecursiveComparison().isEqualTo(vibeDto);

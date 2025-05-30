@@ -1,6 +1,7 @@
 package com.example.demo.utils;
 
 import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -19,6 +20,12 @@ import java.util.Date;
 public class JwtUtils {
     private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor("ClubMateIstDasBesteUndIstBesserAlsSoEinPupsWasserWieCrystalPepsi123!".getBytes());
     private static final long EXPIRATION_TIME = 3600_000;
+    private final UserRepository userRepository;
+    private String createdToken;
+
+    public JwtUtils(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     /**
      * Erstellt einen JWT
@@ -27,7 +34,7 @@ public class JwtUtils {
      * @return ein gültiger Jwt mit Laufzeit von 1h
      */
     public String createToken(User user) {
-        return Jwts.builder()
+         this.createdToken = Jwts.builder()
             .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
             .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
@@ -35,6 +42,24 @@ public class JwtUtils {
             .claim("username", user.getUsername())
             .claim("email", user.getEmail())
             .compact();
+        return this.createdToken;
+    }
+
+    /**
+     * Erstellt einen neuen Token wenn der alte Abgelaufen ist für den eingeloggten User.
+     * @param loggedInUser der eingeloggte User.
+     * @return neuer Token
+     */
+    public String createNewRefreshToken(LoggedInUser loggedInUser) {
+        this.createdToken= Jwts.builder()
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
+                .claim("userId", loggedInUser.getId())
+                .claim("username", loggedInUser.getUsername())
+                .claim("email", loggedInUser.getEmail())
+                .compact();
+        return this.createdToken;
     }
 
     /**

@@ -4,6 +4,7 @@ import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.utils.BCryptUtils;
 import com.example.demo.utils.JwtUtils;
+import com.example.demo.utils.LoggedInUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class LoginServiceImpl implements LoginService {
     private final UserRepository userRepository;
     private final BCryptUtils bCryptUtils;
     private final JwtUtils jwtUtils;
+    private LoggedInUser loggedInUser;
 
     /**
      * Gibt bei erfolgreichem Login einen validen JWT mit einer Ablaufzeit von 1h zurück.
@@ -40,6 +42,8 @@ public class LoginServiceImpl implements LoginService {
                 "Der User oder das Passwort ist falsch du Affe leck :)B========D"
             );
         }
+
+        this.loggedInUser = new LoggedInUser(user.getUsername(),user.getId(), user.getEmail());
 
         return this.jwtUtils.createToken(foundUser);
     }
@@ -65,5 +69,10 @@ public class LoginServiceImpl implements LoginService {
         } catch (Exception e) {
             throw new HttpClientErrorException(HttpStatusCode.valueOf(500), e.getMessage());
         }
+    }
+
+    @Override
+    public String refreshToken() throws HttpClientErrorException {
+        return this.jwtUtils.createNewRefreshToken(this.loggedInUser);
     }
 }

@@ -3,10 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.User;
 import com.example.demo.services.LoginService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 /**
@@ -39,5 +36,10 @@ public class LoginController {
     @PostMapping("/register")
     public void register(@RequestBody User user) throws HttpClientErrorException {
         this.loginService.register(user);
+    }
+
+    @GetMapping("/refresh")
+    public String refresh() {
+       return this.loginService.refreshToken();
     }
 }

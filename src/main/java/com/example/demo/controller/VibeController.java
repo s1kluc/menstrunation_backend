@@ -4,13 +4,11 @@ import com.example.demo.model.VibeDto;
 import com.example.demo.services.VibeService;
 import com.example.demo.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -66,8 +64,7 @@ public class VibeController {
      */
     @GetMapping()
     public VibeDto getVibeByDate(
-        @RequestParam(name = "date")
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+        @RequestParam(name = "date") String date,
         @RequestHeader("Authorization") String bearerToken
     ) throws HttpClientErrorException {
         return this.vibeService.getVibeByDate(
@@ -82,11 +79,14 @@ public class VibeController {
      * @param vibeDto das DTO-Objekt mit Informationen
      */
     @PutMapping
-    public void updateVibe(
+    public VibeDto updateVibe(
         @RequestBody VibeDto vibeDto,
         @RequestHeader("Authorization") String bearerToken
     ) throws HttpClientErrorException {
-        this.vibeService.updateVibe(vibeDto, this.jwtUtils.parseToken(this.jwtUtils.returnJwt(bearerToken)).get("userId", Long.class));
+        return this.vibeService.updateVibe(
+            vibeDto,
+            this.jwtUtils.parseToken(this.jwtUtils.returnJwt(bearerToken)).get("userId", Long.class)
+        );
     }
 
     /**

@@ -31,12 +31,13 @@ public class VibeServiceImpl implements VibeService {
      */
     @Override
     public VibeDto createNewVibe(VibeDto vibeDto, long userId) throws HttpClientErrorException {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         Vibe vibe = Vibe.builder()
             .userId(userId)
             .anger(vibeDto.getAnger())
             .blood(vibeDto.getBlood())
             .period(vibeDto.isPeriod())
-            .createdAt(LocalDate.now())
+            .createdAt(LocalDate.parse(vibeDto.getDate(), dateTimeFormatter))
             .mood(String.join(",", vibeDto.getMood()))
             .build();
         Vibe createdVibe;
@@ -45,7 +46,6 @@ public class VibeServiceImpl implements VibeService {
         } catch (Exception e) {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         return VibeDto.builder()
             .id(createdVibe.getId())
@@ -53,7 +53,7 @@ public class VibeServiceImpl implements VibeService {
             .anger(createdVibe.getAnger())
             .blood(createdVibe.getBlood())
             .period(createdVibe.isPeriod())
-            .createdAt(dateTimeFormatter.format(createdVibe.getCreatedAt()))
+            .date(dateTimeFormatter.format(createdVibe.getCreatedAt()))
             .mood(createdVibe.getMood().split(","))
             .build();
     }
@@ -65,7 +65,7 @@ public class VibeServiceImpl implements VibeService {
      * @param userId  die User-Id
      */
     @Override
-    public void updateVibe(VibeDto vibeDto, long userId) throws HttpClientErrorException {
+    public VibeDto updateVibe(VibeDto vibeDto, long userId) throws HttpClientErrorException {
         Vibe foundVibe;
         try {
             foundVibe = this.vibeRepository.findVibeByIdAndUserId(vibeDto.getId(), userId);
@@ -79,7 +79,16 @@ public class VibeServiceImpl implements VibeService {
         foundVibe.setAnger(vibeDto.getAnger());
         foundVibe.setBlood(vibeDto.getBlood());
 
-        this.vibeRepository.save(foundVibe);
+        Vibe createdVibe = this.vibeRepository.save(foundVibe);
+        return VibeDto.builder()
+            .id(createdVibe.getId())
+            .userId(createdVibe.getUserId())
+            .anger(createdVibe.getAnger())
+            .blood(createdVibe.getBlood())
+            .period(createdVibe.isPeriod())
+            .date(dateTimeFormatter.format(createdVibe.getCreatedAt()))
+            .mood(createdVibe.getMood().split(","))
+            .build();
     }
 
     /**
@@ -115,7 +124,7 @@ public class VibeServiceImpl implements VibeService {
                 .blood(vibe.getBlood())
                 .period(vibe.isPeriod())
                 .mood(vibe.getMood().split(","))
-                .createdAt(dateTimeFormatter.format(vibe.getCreatedAt()))
+                .date(dateTimeFormatter.format(vibe.getCreatedAt()))
                 .build();
             vibeDtoList.add(vibeDto);
         }
@@ -130,14 +139,14 @@ public class VibeServiceImpl implements VibeService {
      * @return das gefundene Vibe-Objekt
      */
     @Override
-    public VibeDto getVibeByDate(LocalDate date, long userId) throws HttpClientErrorException {
+    public VibeDto getVibeByDate(String date, long userId) throws HttpClientErrorException {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         Vibe foundVibe;
         try {
-            foundVibe = this.vibeRepository.findFirstByCreatedAtAndUserId(date, userId);
+            foundVibe = this.vibeRepository.findFirstByCreatedAtAndUserId(LocalDate.parse(date, dateTimeFormatter), userId);
         } catch (Exception e) {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return VibeDto.builder()
             .id(foundVibe.getId())
             .userId(foundVibe.getUserId())
@@ -145,7 +154,7 @@ public class VibeServiceImpl implements VibeService {
             .blood(foundVibe.getBlood())
             .period(foundVibe.isPeriod())
             .mood(foundVibe.getMood().split(","))
-            .createdAt(dateTimeFormatter.format(foundVibe.getCreatedAt()))
+            .date(dateTimeFormatter.format(foundVibe.getCreatedAt()))
             .build();
     }
 

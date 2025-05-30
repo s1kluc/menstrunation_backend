@@ -10,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class GlobalCorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry) {
-        corsRegistry.addMapping("/menstrunation/api/**");
+        corsRegistry.addMapping("/menstrunation/**")
+            .allowedMethods("*");
     }
 }

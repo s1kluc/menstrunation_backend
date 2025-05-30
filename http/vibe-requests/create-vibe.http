@@ -24,5 +24,6 @@ Authorization: Bearer {{jwt}}
     "lasdfasdfeck",
     "measdfin",
     "ei"
-  ]
+  ],
+  "date": "2025-05-31"
 }

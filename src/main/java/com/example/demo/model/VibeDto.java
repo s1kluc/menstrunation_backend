@@ -17,5 +17,5 @@ public class VibeDto {
     private boolean period;
     private int blood;
     private String[] mood;
-    private String createdAt;
+    private String date;
 }
